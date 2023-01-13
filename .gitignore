@@ -6,3 +6,4 @@
 /.idea/
 insim.txt
 gradle.properties
+/build/
