@@ -1,0 +1,8 @@
+# Default ignored files
+/shelf/
+/workspace.xml
+/out/
+/.gradle/
+/.idea/
+insim.txt
+gradle.properties
