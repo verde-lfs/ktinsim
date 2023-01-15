@@ -69,7 +69,7 @@ data class PlayerJoinPacket(
     val addedMass: UByte,
     val intakeRestriction: UByte,
     val driverModel: UByte,
-    val passengers: UByte,
+    val passengers: List<Passenger>,
 
     val tyreWidthReductionRear: UByte,
     val tyreWidthReductionFront: UByte,
@@ -88,7 +88,7 @@ data class PlayerJoinPacket(
         playerId = data[3].toUByte(),
         connectionId = data[4].toUByte(),
         playerType = data[5].toUByte(),
-        flags = PlayerFlags.getList(data.getUShortAt(6).toInt()),
+        flags = PlayerFlags.getList(data.getUShortAt(6).toUInt()),
         nickName = data.getASCIIString(8, 24),
         numberPlate = data.getASCIIString(32, 8),
         carName = data.getASCIIString(40, 4),
@@ -97,7 +97,7 @@ data class PlayerJoinPacket(
         addedMass = data[64].toUByte(),
         intakeRestriction = data[65].toUByte(),
         driverModel = data[66].toUByte(),
-        passengers = data[67].toUByte(),
+        passengers = Passenger.getList(data[67].toUByte().toUInt()),
         tyreWidthReductionRear = data[68].toUByte(),
         tyreWidthReductionFront = data[69].toUByte(),
         setupFlags = data[72].toUByte(),
@@ -105,4 +105,14 @@ data class PlayerJoinPacket(
         config = data[74].toUByte(),
         fuel = data[75].toUByte()
     )
+
+    enum class SetupFlag(override val value: UInt): FlagEnum {
+        SYMM_WHEELS(1u),
+        TC(2u),
+        ABS(4u);
+
+        companion object: FlagEnumCompanion<SetupFlag> {
+            override var values = values()
+        }
+    }
 }

@@ -46,7 +46,7 @@ data class LapTimePacket(
         lapTime = data.getUIntAt(4),
         totalTime = data.getUIntAt(8),
         lapsDone = data.getUShortAt(12),
-        flags = PlayerFlags.getList(data.getUShortAt(14).toInt()),
+        flags = PlayerFlags.getList(data.getUShortAt(14).toUInt()),
         penalty = get<Penalty>(data[17]),
         pitStops = data[18].toUByte(),
         fuel = data[19].toUByte()

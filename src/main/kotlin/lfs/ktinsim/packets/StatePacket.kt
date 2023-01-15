@@ -81,7 +81,7 @@ data class StatePacket(
         requestId = data[2].toUByte(),
         replaySpeed = data.getFloatAt(4),
         flags = Flags(data.getUShortAt(8).toInt()),
-        inGameCamera = get<InGameCamera>(data[10]),
+        inGameCamera = InGameCamera.get(data[10].toUByte()),
         playerId = data[11].toUByte(),
 
         numberOfPlayers = data[12].toUByte(),

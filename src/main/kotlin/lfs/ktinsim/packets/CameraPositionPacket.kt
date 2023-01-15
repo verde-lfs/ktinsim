@@ -87,7 +87,7 @@ data class CameraPositionPacket(
         roll = data.getUShortAt(20),
 
         playerId = data[22].toUByte(),
-        ingameCamera = get<InGameCamera>(data[23]),
+        ingameCamera = InGameCamera.get(data[23].toUByte()),
         fov = data.getFloatAt(24),
         time = data.getUShortAt(28),
         flags = data.getUShortAt(30)

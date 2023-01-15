@@ -47,7 +47,7 @@ data class ResultPacket(
 	val bestLapTime: UInt,
     
 	val pitStops: UByte,
-	val confirmationFlags: UByte,
+	val confirmationFlags: List<ConfirmationFlags>,
 	
 	val lapsDone: UShort,
 	val flags: List<PlayerFlags>,
@@ -73,10 +73,10 @@ data class ResultPacket(
 		bestLapTime = data.getUIntAt(68),
 
 		pitStops = data[73].toUByte(),
-		confirmationFlags = data[74].toUByte(),
+		confirmationFlags = ConfirmationFlags.getList(data[74].toUByte().toUInt()),
 
 		lapsDone = data.getUShortAt(76),
-		flags = PlayerFlags.getList(data.getUShortAt(78).toInt()),
+		flags = PlayerFlags.getList(data.getUShortAt(78).toUInt()),
 
 		result = data[80].toUByte(),
 		resultsCount = data[81].toUByte(),

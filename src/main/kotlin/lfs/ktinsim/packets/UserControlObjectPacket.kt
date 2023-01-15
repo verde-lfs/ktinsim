@@ -55,7 +55,7 @@ enum
 
 data class UserControlObjectPacket(
     val playerId: UByte,
-    val action: UByte,
+    val action: Action,
     val time: UInt,
     val carObjectContact: CarObjectContact,
     val objectInfo: ObjectInfo,
@@ -66,9 +66,16 @@ data class UserControlObjectPacket(
 
     constructor(data: ByteArray) : this(
         playerId = data[3].toUByte(),
-        action = data[5].toUByte(),
+        action = get<Action>(data[5]),
         time = data.getUIntAt(8),
         carObjectContact = CarObjectContact(data.sliceArray(12 until 20)),
         objectInfo = ObjectInfo(data.sliceArray(20 until 28))
     )
+
+    enum class Action {
+        CIRCLE_ENTER,	// entered a circle
+        CIRCLE_LEAVE,	// left a circle
+        CP_FWD,			// crossed cp in forward direction
+        CP_REV;		// crossed cp in reverse direction
+    }
 }

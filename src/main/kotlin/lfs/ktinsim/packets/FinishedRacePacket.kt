@@ -30,7 +30,7 @@ data class FinishedRacePacket(
     val raceTime: UInt,
     val bestTime: UInt,
     val pitStops: UByte,
-    val confirmationFlags: UByte,
+    val confirmationFlags: List<ConfirmationFlags>,
     val lapsDone: UShort,
     val flags: List<PlayerFlags>
 ) : Packet {
@@ -43,8 +43,8 @@ data class FinishedRacePacket(
         raceTime = data.getUIntAt(4),
         bestTime = data.getUIntAt(8),
         pitStops = data[13].toUByte(),
-        confirmationFlags = data[14].toUByte(),
+        confirmationFlags = ConfirmationFlags.getList(data[14].toUByte().toUInt()),
         lapsDone = data.getUShortAt(16),
-        flags = PlayerFlags.getList(data.getUShortAt(18).toInt())
+        flags = PlayerFlags.getList(data.getUShortAt(18).toUInt())
     )
 }

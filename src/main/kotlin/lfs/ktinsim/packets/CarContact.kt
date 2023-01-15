@@ -27,7 +27,7 @@ struct CarContact // 16 bytes: one car in a contact - two of these in the IS_CON
 
 data class CarContact(
     val playerId: UByte,
-    val info: UByte,
+    val info: List<CarInfoByte>,
     val steeringAngle: Byte,
     val throttle: UByte,
     val brake: UByte,
@@ -45,7 +45,7 @@ data class CarContact(
 
     constructor(data: ByteArray) : this(
         playerId = data[0].toUByte(),
-        info = data[1].toUByte(),
+        info = CarInfoByte.getList(data[1].toUInt()),
         steeringAngle = data[3],
         throttle = ((data[4].toUInt() and 0xF0u) shr 4).toUByte(),
         brake = (data[4].toUInt() and 0x0Fu).toUByte(),

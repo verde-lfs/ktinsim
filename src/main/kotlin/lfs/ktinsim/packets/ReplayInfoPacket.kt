@@ -72,7 +72,7 @@ data class ReplayInfoPacket(
     val error: UByte,
     val isMPR: Boolean,
     val paused: UByte,
-    val options: UByte,
+    val options: List<Option>,
     val currentTime: UInt,
     val totalTime: UInt,
     val replayName: String
@@ -86,9 +86,19 @@ data class ReplayInfoPacket(
         error = data[3].toUByte(),
         isMPR = data[4].toInt() == 1,
         paused = data[5].toUByte(),
-        options = data[6].toUByte(),
+        options = Option.getList(data[6].toUByte().toUInt()),
         currentTime = data.getUIntAt(8),
         totalTime = data.getUIntAt(12),
         replayName = data.getASCIIString(16, 64),
     )
+
+    enum class Option(override val value: UInt): FlagEnum {
+        LOOP(1u),
+        SKINS(2u),
+        FULL_PHYS(4u);
+
+        companion object: FlagEnumCompanion<Option> {
+            override var values = values()
+        }
+    }
 }

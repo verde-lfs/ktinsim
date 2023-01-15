@@ -41,17 +41,17 @@ data class ButtonClickPacket(
         connectionId = data[3].toUByte(),
         clickId = data[4].toUByte(),
         internalValue = data[5].toUByte(),
-        flags = arrayListOf<Flag>().apply {
-            for (flag in Flag.values()) {
-                if ((data[6].toInt() and flag.value) > 0) this.add(flag)
-            }
-        }
+        flags = Flag.getList(data[6].toUInt())
     )
 
-    enum class Flag(val value: Int) {
-        LMB(1),
-        RMB(2),
-        CTRL(4),
-        SHIFT(8);
+    enum class Flag(override val value: UInt): FlagEnum {
+        LMB(1u),
+        RMB(2u),
+        CTRL(4u),
+        SHIFT(8u);
+
+        companion object : FlagEnumCompanion<Flag> {
+            override var values = Flag.values()
+        }
     }
 }

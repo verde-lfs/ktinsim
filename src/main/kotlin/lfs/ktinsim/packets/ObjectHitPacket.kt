@@ -44,7 +44,7 @@ data class ObjectHitPacket(
 
     val z: UByte,
     val index: UByte,
-    val flags: UByte
+    val flags: List<Flag>
 ) : Packet {
     companion object {
         val TYPE = InSim.PacketTypes.ISP_OBH.byte()
@@ -59,6 +59,17 @@ data class ObjectHitPacket(
         y = data.getShortAt(18),
         z = data[20].toUByte(),
         index = data[22].toUByte(),
-        flags = data[23].toUByte()
+        flags = Flag.getList(data[23].toUByte().toUInt())
     )
+
+    enum class Flag(override val value: UInt): FlagEnum {
+        LAYOUT(1u),
+        CAN_MOVE(2u),
+        WAS_MOVING(4u),
+        ON_SPOT(8u);
+
+        companion object: FlagEnumCompanion<Flag> {
+            override var values = values()
+        }
+    }
 }

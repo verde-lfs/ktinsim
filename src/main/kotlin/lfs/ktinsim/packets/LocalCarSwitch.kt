@@ -32,27 +32,31 @@ package lfs.ktinsim.packets
 
  */
 
-object LocalCarSwitches {
-    const val SET_SIGNALS = 1
-    const val SET_FLASH = 2
-    const val SET_HEADLIGHTS = 4
-    const val SET_HORN = 8
-    const val SET_SIREN = 16
+enum class LocalCarSwitch(override val value: UInt): FlagEnum {
+    SET_SIGNALS(1u),
+    SET_FLASH(2u),
+    SET_HEADLIGHTS(4u),
+    SET_HORN(8u),
+    SET_SIREN(16u),
 
-    const val SIGNAL_LEFT = 0x0100
-    const val SIGNAL_RIGHT = 0x0200
-    const val SIGNAL_HAZARD = 0x0300
+    SIGNAL_LEFT(0x0100u),
+    SIGNAL_RIGHT(0x0200u),
+    SIGNAL_HAZARD(0x0300u),
 
-    const val FLASH_ON = 0x0400
+    FLASH_ON(0x0400u),
 
-    const val HEADLIGHTS_ON = 0x0800
+    HEADLIGHTS_ON(0x0800u),
 
-    const val HORN_TYPE_1 = 0x10000
-    const val HORN_TYPE_2 = 0x20000
-    const val HORN_TYPE_3 = 0x30000
-    const val HORN_TYPE_4 = 0x40000
-    const val HORN_TYPE_5 = 0x50000
+    HORN_TYPE_1(0x10000u),
+    HORN_TYPE_2(0x20000u),
+    HORN_TYPE_3(0x30000u),
+    HORN_TYPE_4(0x40000u),
+    HORN_TYPE_5(0x50000u),
 
-    const val SIREN_FAST = 0x100000
-    const val SIREN_SLOW = 0x200000
+    SIREN_FAST(0x100000u),
+    SIREN_SLOW(0x200000u);
+
+}
+fun List<LocalCarSwitch>.toUInt(): UInt {
+    return this.fold(0u) {acc, switch -> acc or switch.value }
 }

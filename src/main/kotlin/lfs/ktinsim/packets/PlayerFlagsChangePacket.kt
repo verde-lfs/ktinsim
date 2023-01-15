@@ -18,7 +18,7 @@ struct IS_PFL // Player FLags (help flags changed)
 
 data class PlayerFlagsChangePacket(
     val playerId: UByte,
-    val flags: UShort
+    val flags: List<PlayerFlags>
 ) : Packet {
     companion object {
         val TYPE = InSim.PacketTypes.ISP_PFL.byte()
@@ -26,6 +26,6 @@ data class PlayerFlagsChangePacket(
 
     constructor(data: ByteArray) : this(
         playerId = data[3].toUByte(),
-        flags = data.getUShortAt(4)
+        flags = PlayerFlags.getList(data.getUShortAt(4).toUInt())
     )
 }

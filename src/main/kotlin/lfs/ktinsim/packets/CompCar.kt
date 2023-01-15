@@ -41,7 +41,7 @@ data class CompCar(
     val lap: UShort,
     val playerId: UByte,
     val position: UByte,
-    val info: UByte,
+    val info: List<CarInfoByte>,
     val x: Int,
     val y: Int,
     val z: Int,
@@ -50,14 +50,13 @@ data class CompCar(
     val heading: UShort,
     val angleVelocity: Short
 ) {
-    companion object;
 
     constructor(data: ByteArray) : this(
         node = data.getUShortAt(0),
         lap = data.getUShortAt(2),
         playerId = data[4].toUByte(),
         position = data[5].toUByte(),
-        info = data[6].toUByte(),
+        info = CarInfoByte.getList(data[6].toUInt()),
         x = data.getIntAt(8),
         y = data.getIntAt(12),
         z = data.getIntAt(16),

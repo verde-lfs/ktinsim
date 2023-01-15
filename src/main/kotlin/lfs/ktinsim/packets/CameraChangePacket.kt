@@ -34,5 +34,5 @@ data class CameraChangePacket(
         val TYPE = InSim.PacketTypes.ISP_CCH.byte()
     }
 
-    constructor(data: ByteArray) : this(data[3].toUByte(), get<InGameCamera>(data[4]))
+    constructor(data: ByteArray) : this(data[3].toUByte(), InGameCamera.get(data[4].toUByte()))
 }

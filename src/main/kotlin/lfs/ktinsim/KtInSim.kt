@@ -307,11 +307,11 @@ open class KtInSim(
         )
     }
 
-    open fun setLocalCarSwitches(switches: UInt) {
+    open fun setLocalCarSwitches(switches: List<LocalCarSwitch>) {
         addPacketToQueue(
             SmallPacket(
                 SmallPacket.SubType.LCS,
-                switches
+                switches.toUInt()
             )
         )
     }

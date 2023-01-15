@@ -3,6 +3,7 @@ package lfs.ktinsim.packets
 import lfs.ktinsim.getUShortAt
 import lfs.ktinsim.getASCIIString
 import lfs.ktinsim.InSim
+import lfs.ktinsim.data.LapTiming
 
 /*
 struct IS_RST // Race STart
@@ -45,11 +46,11 @@ data class RaceStartPacket(
     val raceLaps: RaceLaps,
     val qualMinutes: UByte,
     val playersInRace: UByte,
-    val lapTiming: UByte,
+    val lapTiming: LapTiming,
     val trackName: String,
     val weather: UByte,
     val wind: Wind,
-    val flags: UShort,
+    val flags: List<RaceFlag>,
     val nodesCount: UShort,
     val finish: UShort,
     val splitNodeIndexes: Array<UShort>,
@@ -63,11 +64,11 @@ data class RaceStartPacket(
         raceLaps = RaceLaps(data[4].toUByte().toInt()),
         qualMinutes = data[5].toUByte(),
         playersInRace = data[6].toUByte(),
-        lapTiming = data[7].toUByte(),
+        lapTiming = LapTiming(data[7].toUByte()),
         trackName = data.getASCIIString(8, 6),
         weather = data[14].toUByte(),
         wind = get<Wind>(data[15]),
-        flags = data.getUShortAt(16),
+        flags = RaceFlag.getList(data.getUShortAt(16).toUInt()),
         nodesCount = data.getUShortAt(18),
         finish = data.getUShortAt(20),
         splitNodeIndexes = Array(3) {

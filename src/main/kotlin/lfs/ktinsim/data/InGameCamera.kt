@@ -8,5 +8,22 @@ enum class InGameCamera: ByteEnum {
     CAM,	// 2 - tv camera
     DRIVER,	// 3 - cockpit
     CUSTOM,	// 4 - custom
-    MAX
+    MAX,
+    ANOTHER;
+
+    override fun byte(): Byte {
+        return if (this == ANOTHER)
+                255.toByte()
+            else
+                super.byte()
+    }
+
+    companion object {
+        fun get(ord: UByte): InGameCamera {
+            return when (ord) {
+                255u.toUByte() -> ANOTHER
+                else -> values()[ord.toInt()]
+            }
+        }
+    }
 }

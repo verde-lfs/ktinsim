@@ -30,12 +30,12 @@ struct IS_PIT // PIT stop (stop at pit garage)
 data class PitStopPacket(
     val playerId: UByte,
     val lapsDone: UShort,
-    val flags: UShort,
+    val flags: List<PlayerFlags>,
     val fuelAdd: UByte,
     val penalty: Penalty,
     val pitStops: UByte,
     val tyres: List<TyreCompound>,
-    val pitWork: UInt
+    val pitWork: List<PitWorkFlag>
 ) : Packet {
     companion object {
         val TYPE = InSim.PacketTypes.ISP_PIT.byte()
@@ -44,11 +44,11 @@ data class PitStopPacket(
     constructor(data: ByteArray) : this(
         playerId = data[3].toUByte(),
         lapsDone = data.getUShortAt(4),
-        flags = data.getUShortAt(6),
+        flags = PlayerFlags.getList(data.getUShortAt(6).toUInt()),
         fuelAdd = data[8].toUByte(),
         penalty = get<Penalty>(data[9]),
         pitStops = data[10].toUByte(),
         tyres = TyreCompound.getList(data.sliceArray(12 until 16)),
-        pitWork = data.getUIntAt(16)
+        pitWork = PitWorkFlag.getList(data.getUIntAt(16))
     )
 }

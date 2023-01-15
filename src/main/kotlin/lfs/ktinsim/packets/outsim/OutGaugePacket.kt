@@ -5,7 +5,8 @@ import lfs.ktinsim.getFloatAt
 import lfs.ktinsim.getIntAt
 import lfs.ktinsim.getUIntAt
 import lfs.ktinsim.getUShortAt
-import lfs.ktinsim.packets.Car
+import lfs.ktinsim.packets.FlagEnum
+import lfs.ktinsim.packets.FlagEnumCompanion
 import lfs.ktinsim.packets.Packet
 
 data class OutGaugePacket(
@@ -39,7 +40,7 @@ data class OutGaugePacket(
     constructor(data: ByteArray) : this(
         time = data.getUIntAt(0),
         car = data.getASCIIString(4, 4),
-        flags = Flags.getList(data.getUShortAt(8).toInt()),
+        flags = Flags.getList(data.getUShortAt(8).toUInt()),
         gear = data[10],
         playerId = data[11].toUByte(),
         speed = data.getFloatAt(12),
@@ -49,8 +50,8 @@ data class OutGaugePacket(
         fuel = data.getFloatAt(28),
         oilPressure = data.getFloatAt(32),
         oilTemp = data.getFloatAt(36),
-        dashLights = DashLight.getList(data.getIntAt(40)),
-        showLights = DashLight.getList(data.getIntAt(44)),
+        dashLights = DashLight.getList(data.getUIntAt(40)),
+        showLights = DashLight.getList(data.getUIntAt(44)),
         throttle = data.getFloatAt(48),
         brake = data.getFloatAt(52),
         clutch = data.getFloatAt(56),
@@ -59,44 +60,36 @@ data class OutGaugePacket(
         id = data.getIntAt(92)
     )
 
-    enum class Flags(val value: Int) {
-        SHIFT(1),
-        CTRL(2),
+    enum class Flags(override val value: UInt): FlagEnum {
+        SHIFT(1u),
+        CTRL(2u),
 
-        TURBO(8192),
-        KM(16384),
-        BAR(32768);
+        TURBO(8192u),
+        KM(16384u),
+        BAR(32768u);
 
-        companion object {
-            fun getList(data: Int): List<Flags> {
-                return values().filter {
-                    (data and it.value) > 0
-                }
-            }
+        companion object : FlagEnumCompanion<Flags> {
+            override var values = Flags.values()
         }
     }
 
-    enum class DashLight(val value: Int) {
-        SHIFT(1),
-        FULLBEAM(2),
-        HANDBRAKE(4),
-        PITSPEED(8),
-        TC(16),
-        SIGNAL_L(32),
-        SIGNAL_R(64),
-        SIGNAL_ANY(128),
-        OILWARN(256),
-        BATTERY(512),
-        ABS(1024),
-        SPARE(2048),
-        NUM(4096);
+    enum class DashLight(override val value: UInt): FlagEnum {
+        SHIFT(1u),
+        FULLBEAM(2u),
+        HANDBRAKE(4u),
+        PITSPEED(8u),
+        TC(16u),
+        SIGNAL_L(32u),
+        SIGNAL_R(64u),
+        SIGNAL_ANY(128u),
+        OILWARN(256u),
+        BATTERY(512u),
+        ABS(1024u),
+        SPARE(2048u),
+        NUM(4096u);
 
-        companion object {
-            fun getList(data: Int): List<DashLight> {
-                return values().filter {
-                    (data and it.value) > 0
-                }
-            }
+        companion object : FlagEnumCompanion<DashLight> {
+            override var values = DashLight.values()
         }
     }
 }
