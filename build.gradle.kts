@@ -1,7 +1,7 @@
 import org.gradle.api.JavaVersion.VERSION_1_8
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-version = "0.1"
+version = "0.2.0"
 group = "lfs.ktinsim"
 
 plugins {

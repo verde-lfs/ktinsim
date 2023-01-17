@@ -17,7 +17,7 @@ repositories {
 3. Add dependency
 ```
 dependencies {
-    implementation("com.github.verde-lfs:ktinsim:0.1")
+    implementation("com.github.verde-lfs:ktinsim:0.2.0")
 }
 ```
 
