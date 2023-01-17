@@ -4,6 +4,8 @@ import lfs.ktinsim.trim
 import lfs.ktinsim.trimBefore
 import java.nio.ByteBuffer
 import java.nio.charset.Charset
+import java.nio.charset.CharsetEncoder
+import java.util.regex.Pattern
 
 object LFSTextUtils {
 
@@ -23,18 +25,18 @@ object LFSTextUtils {
         '8'.code.toByte() to "windows-1252"
     )
 
-    val specialSymbolsDecodeMap = mapOf<String, Byte>(
-        "^v" to '|'.code.toByte(),
-        "^a" to '*'.code.toByte(),
-        "^c" to ':'.code.toByte(),
-        "^d" to '\\'.code.toByte(),
-        "^s" to '/'.code.toByte(),
-        "^q" to '?'.code.toByte(),
-        "^t" to '\"'.code.toByte(),
-        "^l" to '<'.code.toByte(),
-        "^r" to '>'.code.toByte(),
-        "^h" to '#'.code.toByte(),
-        "^^" to '^'.code.toByte(),
+    val specialSymbolsDecodeMap = mapOf<Int, String>(
+        'v'.code to "|",
+        'a'.code to "*",
+        'c'.code to ":",
+        'd'.code to "\\",
+        's'.code to "/",
+        'q'.code to "?",
+        't'.code to "\"",
+        'l'.code to "<",
+        'r'.code to ">",
+        'h'.code to "#",
+        '^'.code to "^",
     )
 
     val specialSymbolsEncodeMap = mapOf<Int, Byte>(
@@ -96,6 +98,8 @@ object LFSTextUtils {
             }
         }
         stringBuilder.append(tempBuffer.array().trim().toString(charset))
+        stringBuilder.replaceAll()
+
         return stringBuilder.toString()
     }
 
@@ -113,6 +117,9 @@ object LFSTextUtils {
                 } else {
                     buffer.put(codePoint.toByte())
                 }
+                i++
+                continue
+            } else if (codePoint > 65535) {
                 i++
                 continue
             }
@@ -149,17 +156,88 @@ object LFSTextUtils {
                     buffer.put('^'.code.toByte())
                     buffer.put('B'.code.toByte())
                 } else {
-                    // TODO (CJK support)
+                    i = encodeCJK(this, i, buffer)
+                    currentSymbolMap = null
                 }
             }
 
-            buffer.put(
-                currentSymbolMap?.get(codePoint)!!.toBytes()
-            )
-            i++
+            currentSymbolMap?.let {
+                buffer.put(
+                    it.get(codePoint)!!.toBytes()
+                )
+
+                i++
+            }
         }
 
         return buffer.array()
+    }
+
+    private class CJKEncoder(charsetName: String, letter: Char) {
+        val charset: Charset? = getCharsetForName(charsetName)
+        val encoder: CharsetEncoder? = charset?.newEncoder()
+        val letterByte: Byte = letter.code.toByte()
+    }
+
+    private val cjkEncoders = arrayOf<CJKEncoder>(
+        CJKEncoder("x-MS932_0213", 'J'),    // Japanese
+        CJKEncoder("x-MS950-HKSCS", 'H'),   // Traditional Chinese
+        CJKEncoder("x-mswin-936", 'S'),     // Simplified Chinese
+        CJKEncoder("x-windows-949", 'K'),   // Korean
+    ).filter { it.charset != null && it.encoder != null }
+
+    private fun encodeCJK(text: String, pos: Int, buffer: ByteBuffer): Int {
+        if (cjkEncoders.isEmpty())
+            return pos+1 // skip the character if no encoders available
+
+        var encoder : CJKEncoder? = null
+        var i = pos
+        var start = 0
+        var end = 0
+
+        while (i < text.length) {
+            val codePoint = text.codePointAt(i).toChar()
+            val isEncoded: Boolean = encoder?.encoder?.let {
+                if (it.canEncode(codePoint)) {
+                    i++
+                    end++
+                    true
+                } else {
+                    false
+                }
+            } ?: false
+            if (isEncoded) continue
+
+            for (cjkEncoder in cjkEncoders) {
+                if (cjkEncoder.encoder == null) break
+
+                if (cjkEncoder.encoder.canEncode(codePoint)) {
+                    buffer.put(text.substring(start, end).toByteArray(cjkEncoder.charset!!))
+                    start = i
+                    buffer.put('^'.code.toByte())
+                    buffer.put(cjkEncoder.letterByte)
+
+                    encoder = cjkEncoder
+                    i++
+                    end = i
+                    break
+                }
+            }
+        }
+        encoder?.let{
+            buffer.put(text.substring(start, end).toByteArray(it.charset!!))
+        }
+        return i
+    }
+
+    private fun StringBuilder.replaceAll() {
+        val matcher = Pattern.compile("\\^").matcher(this)
+        var start = 0
+        while (matcher.find(start)) {
+            val symbol = this.codePointAt(matcher.start()+1)
+            this.replace(matcher.start(), matcher.end()+1, specialSymbolsDecodeMap[symbol])
+            start = matcher.start() + 1
+        }
     }
 }
 
@@ -167,6 +245,12 @@ private fun Int.toBytes(): ByteArray {
     return ByteArray(4) {
         (this and (0xFF shl (3-it)*8).toInt() shr (3-it)*8).toByte()
     }.trimBefore()
+}
+
+inline fun getCharsetForName(name: String) = try {
+    Charset.forName(name)
+} catch (e: Exception) {
+    null
 }
 
 // Latin
