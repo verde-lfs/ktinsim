@@ -315,6 +315,10 @@ open class KtInSim(
             )
         )
     }
+
+    open fun sendMessage(message: String) {
+        addPacketToQueue(MessageInPacket(message))
+    }
 }
 
 private fun ByteArray.hasPacketType(type: PacketTypes) : Boolean {
